@@ -1,7 +1,35 @@
 import React from "react";
+import { download } from "../assets";
+import { downloadImage } from "../utils";
 
-const Card = () => {
-	return <div>Card</div>;
+const Card = ({ _id, name, prompt, photo }) => {
+	return (
+		<div className="rounded-xl group relative shadow-card hover:shadow-cardhover card">
+			<img
+				className="w-full h-auto object-cover rounded-xl"
+				src={photo}
+				alt={prompt}
+			/>
+			<div className="group-hover:flex flex-col max-h-[94.5%] hidden absolute bottom-0 right-0 left-0 bg-[#10131f] m-2 p-4 rounded-md">
+				<p className="text-white text-sm overflow-y-auto prompt">{prompt}</p>
+				<div className="mt-5 flex justify-between items-center gap-2">
+					<div className="flex items-center gap-2">
+						<div className="text-white bg-green-700 rounded-full w-7 h-7 items-center flex justify-center text-sm font-bold object-cover">
+							{name[0]}
+						</div>
+						<p className="text-sm text-white">{name}</p>
+					</div>
+					<button type="button" onClick={() => downloadImage(_id, photo)}>
+						<img
+							className="w-6 h-6 object-contain invert"
+							src={download}
+							alt="download"
+						/>
+					</button>
+				</div>
+			</div>
+		</div>
+	);
 };
 
 export default Card;
