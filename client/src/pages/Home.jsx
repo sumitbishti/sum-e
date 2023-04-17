@@ -52,7 +52,7 @@ const Home = () => {
 			setTimeout(() => {
 				const searchResults = allPosts.filter((post) => {
 					return (
-						post.name.toLowercase().includes(searchText.toLowerCase()) ||
+						post.name.toLowerCase().includes(searchText.toLowerCase()) ||
 						post.prompt.toLowerCase().includes(searchText.toLowerCase())
 					);
 				});
@@ -73,7 +73,15 @@ const Home = () => {
 			</div>
 
 			<div className="mt-16">
-				<FormField />
+				<FormField
+					type="text"
+					name="text"
+					value={searchText}
+					labelName="Search Posts"
+					placeholder="Search Posts"
+					isSurpriseMe={false}
+					handleChange={handleSearchChange}
+				/>
 			</div>
 
 			<div className="mt-10">
@@ -92,7 +100,7 @@ const Home = () => {
 
 						<div className="grid lg:grid-cols-4 xs:grid-cols-2 sm:grid-cols-3 grid-cols-1 gap-3">
 							{searchText ? (
-								<RenderCards data={[]} title="No Search results" />
+								<RenderCards data={searchedResults} title="No Search results" />
 							) : (
 								<RenderCards data={allPosts} title="No Posts" />
 							)}
