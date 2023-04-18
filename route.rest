@@ -1,1 +1,1 @@
-GET https://sum-e.vercel.app/api/v1/post
+GET https://sum-e-server.vercel.app/api/v1/post
