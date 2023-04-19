@@ -21,13 +21,16 @@ const createPost = () => {
 		if (form.prompt && form.photo) {
 			setLoading(true);
 			try {
-				const response = await fetch("https://sum-e-server.vercel.app/api/v1/post", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({ ...form }),
-				});
+				const response = await fetch(
+					"https://sum-e-server.vercel.app/api/v1/post",
+					{
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({ ...form }),
+					}
+				);
 
 				await response.json();
 				// alert("Success");
@@ -49,19 +52,24 @@ const createPost = () => {
 		setForm({ ...form, prompt: randomPrompt });
 	};
 
-	const generateImage = async () => {
+	const generateImage = async (e) => {
+		e.preventDefault();
+		
 		if (form.prompt) {
 			try {
 				setGeneratingImg(true);
-				const response = await fetch("https://sum-e-server.vercel.app/api/v1/dalle", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						prompt: form.prompt,
-					}),
-				});
+				const response = await fetch(
+					"https://sum-e-server.vercel.app/api/v1/dalle",
+					{
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({
+							prompt: form.prompt,
+						}),
+					}
+				);
 
 				const data = await response.json();
 				setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` });
@@ -84,7 +92,7 @@ const createPost = () => {
 				</p>
 			</div>
 
-			<form className="mt-16 max-w-3xl" onSubmit={handleSubmit}>
+			<form className="mt-16 max-w-3xl" onSubmit={generateImage}>
 				<div className="flex flex-col gap-5">
 					<FormField
 						labelName="Your name"
@@ -130,7 +138,7 @@ const createPost = () => {
 				<div className="mt-5 flex gap-5">
 					<button
 						className="bg-green-700 rounded-md text-white font-medium text-sm w-full sm:w-auto px-5 py-2.5 text-center"
-						type="button"
+						type="submit"
 						onClick={generateImage}
 					>
 						{generatingImg ? "Generating..." : "Generate Image"}
@@ -141,7 +149,8 @@ const createPost = () => {
 						Share your amazing creation with the community
 					</p>
 					<button
-						type="submit"
+						type="button"
+						onClick={handleSubmit}
 						className="mt-3 bg-[#6469ff] rounded-md text-sm w-full font-medium text-white text-center sm:w-auto px-5 py-2.5"
 					>
 						{loading ? "Sharing..." : "Share with Community"}
