@@ -4,6 +4,7 @@ import { getRandomPrompt } from "../utils";
 import { preview } from "../assets";
 import { FormField } from "../components";
 import { Loader } from "../components";
+import axios from "axios";
 
 const createPost = () => {
 	const navigate = useNavigate();
@@ -21,19 +22,23 @@ const createPost = () => {
 		if (form.prompt && form.photo) {
 			setLoading(true);
 			try {
-				const response = await fetch(
-					"https://sum-e-server.vercel.app/api/v1/post",
-					{
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						body: JSON.stringify({ ...form }),
-					}
-				);
+				// 	const response = await fetch(
+				// 		"https://sum-e-server.vercel.app/api/v1/post",
+				// 		{
+				// 			method: "POST",
+				// 			headers: {
+				// 				"Content-Type": "application/json",
+				// 			},
+				// 			body: JSON.stringify({ ...form }),
+				// 		}
+				// 	);
+				// 	await response.json();
 
-				await response.json();
-				// alert("Success");
+				await axios.post("https://sum-e-server.vercel.app/api/v1/post", {
+					name: form.name,
+					photo: form.photo,
+					prompt: form.prompt,
+				});
 				navigate("/");
 			} catch (err) {
 				alert(err);
@@ -54,25 +59,34 @@ const createPost = () => {
 
 	const generateImage = async (e) => {
 		e.preventDefault();
-		
+
 		if (form.prompt) {
 			try {
 				setGeneratingImg(true);
-				const response = await fetch(
+				// const response = await fetch(
+				// 	"https://sum-e-server.vercel.app/api/v1/dalle",
+				// 	{
+				// 		method: "POST",
+				// 		headers: {
+				// 			"Content-Type": "application/json",
+				// 		},
+				// 		body: JSON.stringify({
+				// 			prompt: form.prompt,
+				// 		}),
+				// 	}
+				// );
+				// const data = await response.json();
+
+				const response = await axios.post(
 					"https://sum-e-server.vercel.app/api/v1/dalle",
 					{
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						body: JSON.stringify({
-							prompt: form.prompt,
-						}),
+						prompt: form.prompt,
 					}
 				);
-
-				const data = await response.json();
-				setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` });
+				setForm({
+					...form,
+					photo: `data:image/jpeg;base64,${response.data.photo}`,
+				});
 			} catch (err) {
 				alert(err);
 			} finally {

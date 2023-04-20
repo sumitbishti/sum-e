@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import axios from "axios";
 import { Card, Loader, FormField } from "../components";
 
 const RenderCards = ({ data, title }) => {
@@ -22,19 +23,28 @@ const Home = () => {
 		setLoading(true);
 
 		try {
-			const response = await fetch(
-				"https://sum-e-server.vercel.app/api/v1/post",
-				{
-					method: "GET",
-					headers: {
-						"Content-Type": "application/json",
-					},
-				}
-			);
+			// data fetching using fetch()
+			// 	const response = await fetch(
+			// 		"https://sum-e-server.vercel.app/api/v1/post",
+			// 		{
+			// 			method: "GET",
+			// 			headers: {
+			// 				"Content-Type": "application/json",
+			// 			},
+			// 		}
+			// 	);
 
-			if (response.ok) {
-				const result = await response.json();
-				setAllPosts(result.data.reverse());
+			// 	if (response.ok) {
+			// 		const result = await response.json();
+			// 		setAllPosts(result.data.reverse());
+			// 	}
+
+			//data fetching using axois
+			const response = await axios.get(
+				"https://sum-e-server.vercel.app/api/v1/post"
+			);
+			if (response.data.data.length > 0) {
+				setAllPosts(response.data.data.reverse());
 			}
 		} catch (err) {
 			alert(err);
