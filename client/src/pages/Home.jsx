@@ -1,7 +1,13 @@
 import React from "react";
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Card, Loader, FormField } from "../components";
+import {
+	fetchPosts,
+	setSearchText,
+	setSearchTimeout,
+	setSearchedResults,
+} from "../features/homePage/homePageSlice";
 
 const RenderCards = ({ data, title }) => {
 	if (data?.length > 0) {
@@ -13,64 +19,29 @@ const RenderCards = ({ data, title }) => {
 };
 
 const Home = () => {
-	const [loading, setLoading] = useState(false);
-	const [allPosts, setAllPosts] = useState(null);
-	const [searchText, setSearchText] = useState("");
-	const [searchedResults, setSearchedResults] = useState(null);
-	const [searchTimeout, setSearchTimeout] = useState(null);
-
-	const fetchPosts = async () => {
-		setLoading(true);
-
-		try {
-			// data fetching using fetch()
-			// 	const response = await fetch(
-			// 		"https://sum-e-server.vercel.app/api/v1/post",
-			// 		{
-			// 			method: "GET",
-			// 			headers: {
-			// 				"Content-Type": "application/json",
-			// 			},
-			// 		}
-			// 	);
-
-			// 	if (response.ok) {
-			// 		const result = await response.json();
-			// 		setAllPosts(result.data.reverse());
-			// 	}
-
-			//data fetching using axois
-			const response = await axios.get(
-				"https://sum-e-server.vercel.app/api/v1/post"
-			);
-			if (response.data.data.length > 0) {
-				setAllPosts(response.data.data.reverse());
-			}
-		} catch (err) {
-			alert(err);
-		} finally {
-			setLoading(false);
-		}
-	};
+	const dispatch = useDispatch();
+	const { allPosts, loading, searchText, searchedResults, searchTimeout } =
+		useSelector((store) => store.homePage);
 
 	useEffect(() => {
-		fetchPosts();
+		dispatch(fetchPosts());
 	}, []);
 
 	const handleSearchChange = (e) => {
 		clearTimeout(searchTimeout);
-		setSearchText(e.target.value);
-
-		setSearchTimeout(
-			setTimeout(() => {
-				const searchResults = allPosts.filter((post) => {
-					return (
-						post.name.toLowerCase().includes(searchText.toLowerCase()) ||
-						post.prompt.toLowerCase().includes(searchText.toLowerCase())
-					);
-				});
-				setSearchedResults(searchResults);
-			}, 500)
+		dispatch(setSearchText(e.target.value));
+		dispatch(
+			setSearchTimeout(
+				setTimeout(() => {
+					const searchResults = allPosts.filter((post) => {
+						return (
+							post.name.toLowerCase().includes(searchText.toLowerCase()) ||
+							post.prompt.toLowerCase().includes(searchText.toLowerCase())
+						);
+					});
+					dispatch(setSearchedResults(searchResults));
+				}, 500)
+			)
 		);
 	};
 	return (

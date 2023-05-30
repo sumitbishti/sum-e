@@ -4,94 +4,41 @@ import { getRandomPrompt } from "../utils";
 import { preview } from "../assets";
 import { FormField } from "../components";
 import { Loader } from "../components";
-import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
+import {
+	setForm,
+	generateImageReducer,
+	postImage,
+} from "../features/post/postSlice";
 
 const createPost = () => {
+	const dispatch = useDispatch();
+	const { loading, generatingImg, form } = useSelector((store) => store.post);
 	const navigate = useNavigate();
-	const [form, setForm] = useState({
-		name: "",
-		prompt: "",
-		photo: "",
-	});
-	const [generatingImg, setGeneratingImg] = useState(false);
-	const [loading, setLoading] = useState(false);
 
-	const handleSubmit = async (e) => {
+	const handleSubmit = (e) => {
 		e.preventDefault();
 
 		if (form.prompt && form.photo) {
-			setLoading(true);
-			try {
-				// 	const response = await fetch(
-				// 		"https://sum-e-server.vercel.app/api/v1/post",
-				// 		{
-				// 			method: "POST",
-				// 			headers: {
-				// 				"Content-Type": "application/json",
-				// 			},
-				// 			body: JSON.stringify({ ...form }),
-				// 		}
-				// 	);
-				// 	await response.json();
-
-				await axios.post("https://sum-e-server.vercel.app/api/v1/post", {
-					name: form.name,
-					photo: form.photo,
-					prompt: form.prompt,
-				});
-				navigate("/");
-			} catch (err) {
-				alert(err);
-			} finally {
-				setLoading(false);
-			}
+			postImage(navigate);
 		} else {
 			alert("Please generate an image with proper details");
 		}
 	};
+
 	const handleChange = (e) => {
-		setForm({ ...form, [e.target.name]: e.target.value });
+		e.preventDefault();
+		dispatch(setForm({ ...form, [e.target.name]: e.target.value }));
 	};
 	const handleSurpriseMe = () => {
 		const randomPrompt = getRandomPrompt(form.prompt);
-		setForm({ ...form, prompt: randomPrompt });
+		dispatch(setForm({ ...form, prompt: randomPrompt }));
 	};
 
-	const generateImage = async (e) => {
+	const generateImage = (e) => {
 		e.preventDefault();
-
 		if (form.prompt) {
-			try {
-				setGeneratingImg(true);
-				// const response = await fetch(
-				// 	"https://sum-e-server.vercel.app/api/v1/dalle",
-				// 	{
-				// 		method: "POST",
-				// 		headers: {
-				// 			"Content-Type": "application/json",
-				// 		},
-				// 		body: JSON.stringify({
-				// 			prompt: form.prompt,
-				// 		}),
-				// 	}
-				// );
-				// const data = await response.json();
-
-				const response = await axios.post(
-					"https://sum-e-server.vercel.app/api/v1/dalle",
-					{
-						prompt: form.prompt,
-					}
-				);
-				setForm({
-					...form,
-					photo: `data:image/jpeg;base64,${response.data.photo}`,
-				});
-			} catch (err) {
-				alert(err);
-			} finally {
-				setGeneratingImg(false);
-			}
+			dispatch(generateImageReducer());
 		} else {
 			alert("Please provide proper prompt");
 		}
